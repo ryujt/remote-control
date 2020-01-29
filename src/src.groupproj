@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{FD56B3C7-8E31-4784-A55B-D4878B450F1D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="client\remo_client.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="server\remo_server.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="gateway\remo_gateway.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="remo_client">
+        <MSBuild Projects="client\remo_client.dproj"/>
+    </Target>
+    <Target Name="remo_client:Clean">
+        <MSBuild Projects="client\remo_client.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="remo_client:Make">
+        <MSBuild Projects="client\remo_client.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="remo_server">
+        <MSBuild Projects="server\remo_server.dproj"/>
+    </Target>
+    <Target Name="remo_server:Clean">
+        <MSBuild Projects="server\remo_server.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="remo_server:Make">
+        <MSBuild Projects="server\remo_server.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="remo_gateway">
+        <MSBuild Projects="gateway\remo_gateway.dproj"/>
+    </Target>
+    <Target Name="remo_gateway:Clean">
+        <MSBuild Projects="gateway\remo_gateway.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="remo_gateway:Make">
+        <MSBuild Projects="gateway\remo_gateway.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="remo_client;remo_server;remo_gateway"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="remo_client:Clean;remo_server:Clean;remo_gateway:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="remo_client:Make;remo_server:Make;remo_gateway:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
