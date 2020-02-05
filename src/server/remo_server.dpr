@@ -9,7 +9,9 @@ uses
   ViewBase in '..\..\lib\Core\ViewBase.pas',
   ClientUnit in '..\..\lib\Core\ClientUnit.pas',
   Core in 'Core\Core.pas',
-  View in 'Core\View.pas';
+  View in 'Core\View.pas',
+  DeskZipUnit in '..\..\lib\Core\DeskZipUnit.pas',
+  DeskUnZipUnit in '..\..\lib\Core\DeskUnZipUnit.pas';
 
 {$R *.res}
 

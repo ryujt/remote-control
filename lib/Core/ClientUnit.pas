@@ -4,13 +4,16 @@ interface
 
 uses
   Config, Protocols,
+  DeskZipUtils, DeskZipUnit, DeskUnZipUnit,
   DebugTools, SuperSocketUtils, SuperSocketClient, JsonData,
-  SysUtils, Classes, TypInfo;
+  SysUtils, Classes, TypInfo, Forms;
 
 type
   TClientUnit = class
   private
     FJsonData : TJsonData;
+    FDeskZip : TDeskZipUnit;
+    FDeskUnZip : TDeskUnZipUnit;
   private
     FSocket : TSuperSocketClient;
     procedure on_FSocket_connected(ASender:TObject);
@@ -33,9 +36,13 @@ type
     procedure Discoonect;
 
     procedure sp_SetConnectionID(AID:integer);
+    procedure sp_AskDeskZip;
   public
     property Connected : boolean read GetConnected;
     property ConnectionID : integer read FConnectionID;
+
+    property DeskZip : TDeskZipUnit read FDeskZip;
+    property DeskUnZip : TDeskUnZipUnit read FDeskUnZip;
   end;
 
 implementation
@@ -65,16 +72,33 @@ begin
 end;
 
 procedure TClientUnit.on_FSocket_Received(ASender: TObject; APacket: PPacket);
-var
-  PacketType : TPacketType;
 begin
-  if APacket^.PacketType = 0 then Exit;
+  {$IFDEF DEBUG}
+//  Trace( Format('TClientUnit.on_FSocket_Received - %d', [APacket^.PacketType]) );
+  {$ENDIF}
 
-  PacketType := TPacketType(APacket^.PacketType);
+  case TPacketType(APacket^.PacketType) of
+    ptPeerConnected: begin
+      // TODO: 모니터 선택 가능하도록
+      FDeskZip.Prepare(Screen.Monitors[0].Width, Screen.Monitors[0].Height);
+    end;
 
-  case PacketType of
     ptText: rp_Text(APacket);
-    else;
+  end;
+
+  if APacket^.PacketType >= 100 then Exit;
+
+  case TFrameType(APacket^.PacketType) of
+    ftNeedNext: ;
+    ftAskDeskZip: FDeskZip.Execute;
+    ftEndOfDeskZip: ;
+
+    ftFrameStart, ftBitmap, ftJpeg, ftPixel: FDeskUnZip.Execute(APacket);
+
+    ftFrameEnd: begin
+      FDeskUnZip.Execute(APacket);
+      sp_AskDeskZip
+    end;
   end;
 end;
 
@@ -98,6 +122,15 @@ begin
   TCore.Obj.View.sp_ConnectionID(FConnectionID);
 end;
 
+procedure TClientUnit.sp_AskDeskZip;
+var
+  packet : TPacket;
+begin
+  packet.PacketSize := 3;
+  packet.PacketType := Byte(ftAskDeskZip);
+  FSocket.Send(@packet);
+end;
+
 procedure TClientUnit.sp_SetConnectionID(AID: integer);
 var
   packet : TConnectionIDPacket;
@@ -106,6 +139,8 @@ begin
   packet.PacketType := ptSetConnectionID;
   packet.ID := AID;
   FSocket.Send(@packet);
+
+  sp_AskDeskZip;
 end;
 
 procedure TClientUnit.Terminate;
@@ -127,16 +162,20 @@ begin
   FJsonData := TJsonData.Create;
 
   FSocket := TSuperSocketClient.Create(true);
-  FSocket.UseNagel := true;
+  FSocket.UseNagel := false;
   FSocket.OnConnected := on_FSocket_connected;
   FSocket.OnDisconnected := on_FSocket_disconnected;
   FSocket.OnReceived := on_FSocket_Received;
+
+  FDeskZip := TDeskZipUnit.Create(FSocket);
+  FDeskUnZip := TDeskUnZipUnit.Create(FSocket);
 end;
 
 destructor TClientUnit.Destroy;
 begin
-  FreeAndNil(FSocket);
   FreeAndNil(FJsonData);
+  FreeAndNil(FSocket);
+  FreeAndNil(FDeskZip);
 
   inherited;
 end;

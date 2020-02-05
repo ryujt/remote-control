@@ -41,8 +41,12 @@ type
     /// 프로그램 종료
     procedure sp_Terminate(AMsg:string);
 
+    /// 로그인 결과 자신의 Connection ID를 알게 되었다.
     procedure sp_ConnectionID(AID:integer);
-published
+
+    /// DeskZip 화면 수신이 완료되어 표시할 준비가 되었다.
+    procedure sp_DeskScreenIsReady;
+  published
     /// 메시지 전송 중인 가?
     property Active : boolean read GetActive write SetActive;  
   end;
@@ -98,6 +102,20 @@ begin
   try
     Params.Values['Code'] := 'ConnectionID';
     Params.Integers['ID'] := AID;
+    FObserverList.AsyncBroadcast(Params);
+  finally
+    Params.Free;
+  end;
+end;
+
+procedure TViewBase.sp_DeskScreenIsReady;
+var
+  Params : TJsonData;
+begin
+  Params := TJsonData.Create;
+  try
+    Params.Values['Code'] := 'DeskScreenIsReady';
+
     FObserverList.AsyncBroadcast(Params);
   finally
     Params.Free;
