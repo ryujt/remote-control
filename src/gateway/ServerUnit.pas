@@ -16,8 +16,10 @@ type
     procedure on_FSocket_Connected(AConnection:TConnection);
     procedure on_FSocket_Disconnected(AConnection:TConnection);
     procedure on_FSocket_Received(AConnection:TConnection; APacket:PPacket);
-
+  private
     procedure rp_SetConnectionID(AConnection:TConnection; APacket:PPacket);
+  private
+    procedure sp_PeerConnected(AConnection:TConnection);
   public
     constructor Create;
     destructor Destroy; override;
@@ -88,7 +90,24 @@ procedure TServerUnit.rp_SetConnectionID(AConnection: TConnection;
 var
   packet : PConnectionIDPacket absolute APacket;
 begin
+  {$IFDEF DEBUG}
+  Trace('TVideoServer.rp_SetConnectionID - ' + Format('%d <--> %d', [packet^.ID, AConnection.ID]));
+  {$ENDIF}
+
+  AConnection.Tag := packet^.ID;
   FSocket.ConnectionList.Items[packet^.ID].Tag := AConnection.ID;
+
+  sp_PeerConnected(AConnection);
+  sp_PeerConnected(FSocket.ConnectionList.Items[packet^.ID]);
+end;
+
+procedure TServerUnit.sp_PeerConnected(AConnection: TConnection);
+var
+  packet : TPacket;
+begin
+  packet.PacketSize := 3;
+  packet.PacketType := Byte(ptPeerConnected);
+  AConnection.Send( GetPacketClone(FMemoryPool, @packet) );
 end;
 
 procedure TServerUnit.Start;

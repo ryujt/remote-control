@@ -6,10 +6,7 @@ uses
   ServerUnit in 'ServerUnit.pas',
   Config in '..\..\lib\Config.pas',
   Global in '..\..\lib\Global.pas',
-  Protocols in '..\..\lib\Protocols.pas',
-  ClientUnit in '..\..\lib\Core\ClientUnit.pas',
-  ViewBase in '..\..\lib\Core\ViewBase.pas',
-  Core in '..\server\Core\Core.pas';
+  Protocols in '..\..\lib\Protocols.pas';
 
 {$R *.res}
 

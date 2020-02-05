@@ -107,6 +107,12 @@
             <Form>fmMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="Core\Core.pas"/>
+        <DCCReference Include="Core\View.pas"/>
+        <DCCReference Include="..\..\lib\Core\ClientUnit.pas"/>
+        <DCCReference Include="..\..\lib\Core\ViewBase.pas"/>
+        <DCCReference Include="..\..\lib\Config.pas"/>
+        <DCCReference Include="..\..\lib\Global.pas"/>
         <DCCReference Include="..\..\lib\Protocols.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

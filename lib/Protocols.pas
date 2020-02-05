@@ -9,8 +9,9 @@ uses
 type
   TPacketType = (
     ptNone=100,
-    ptText,
     ptSetConnectionID,
+    ptPeerConnected,
+    ptText,
     ptKeyDown, ptKeyUp,
     ptMouseDownLeft, ptMouseDownMiddle, ptMouseDownRight,
     ptMouseMoveLeft, ptMouseMoveMiddle, ptMouseMoveRight,

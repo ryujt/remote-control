@@ -6,10 +6,10 @@ uses
   Config in '..\..\lib\Config.pas',
   Global in '..\..\lib\Global.pas',
   Protocols in '..\..\lib\Protocols.pas',
-  View in 'Core\View.pas',
   ViewBase in '..\..\lib\Core\ViewBase.pas',
   ClientUnit in '..\..\lib\Core\ClientUnit.pas',
-  Core in 'Core\Core.pas';
+  Core in 'Core\Core.pas',
+  View in 'Core\View.pas';
 
 {$R *.res}
 

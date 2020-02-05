@@ -31,6 +31,8 @@ type
 
     procedure Connect;
     procedure Discoonect;
+
+    procedure sp_SetConnectionID(AID:integer);
   public
     property Connected : boolean read GetConnected;
     property ConnectionID : integer read FConnectionID;
@@ -94,6 +96,16 @@ begin
   FConnectionID := Random(1024) * CONNECTION_POOL_SIZE + id;
 
   TCore.Obj.View.sp_ConnectionID(FConnectionID);
+end;
+
+procedure TClientUnit.sp_SetConnectionID(AID: integer);
+var
+  packet : TConnectionIDPacket;
+begin
+  packet.PacketSize := SizeOf(TConnectionIDPacket);
+  packet.PacketType := ptSetConnectionID;
+  packet.ID := AID;
+  FSocket.Send(@packet);
 end;
 
 procedure TClientUnit.Terminate;
