@@ -12,6 +12,12 @@ type
   TfrDeskScreen = class(TFrame, IFrameBase)
     ScrollBox: TScrollBox;
     Image: TImage;
+    procedure ImageMouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure ImageMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure ImageMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     procedure BeforeShow;
     procedure AfterShow;
@@ -61,6 +67,32 @@ begin
   inherited;
 end;
 
+procedure TfrDeskScreen.ImageMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  case Button of
+    mbLeft   : TClientUnit.Obj.sp_MouseDown(MOUSEEVENTF_LEFTDOWN, X, Y);
+    mbMiddle : TClientUnit.Obj.sp_MouseDown(MOUSEEVENTF_MIDDLEDOWN, X, Y);
+    mbRight  : TClientUnit.Obj.sp_MouseDown(MOUSEEVENTF_RIGHTDOWN, X, Y);
+  end;
+end;
+
+procedure TfrDeskScreen.ImageMouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  TClientUnit.Obj.sp_MouseMove(X, Y);
+end;
+
+procedure TfrDeskScreen.ImageMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  case Button of
+    mbLeft   : TClientUnit.Obj.sp_MouseUp(MOUSEEVENTF_LEFTUP, X, Y);
+    mbMiddle : TClientUnit.Obj.sp_MouseUp(MOUSEEVENTF_MIDDLEUP, X, Y);
+    mbRight  : TClientUnit.Obj.sp_MouseUp(MOUSEEVENTF_RIGHTUP, X, Y);
+  end;
+end;
+
 procedure TfrDeskScreen.rp_DeskScreenIsReady(AJsonData: TJsonData);
 begin
   TClientUnit.Obj.DeskUnZip.GetBitmap(Image.Picture.Bitmap);
@@ -71,3 +103,12 @@ begin
 end;
 
 end.
+
+  PACKET_MOUSE_MOVE       = MOUSEEVENTF_MOVE;
+  PACKET_MOUSE_LEFTDOWN   = MOUSEEVENTF_LEFTDOWN;
+  PACKET_MOUSE_LEFTUP     = MOUSEEVENTF_LEFTUP;
+  PACKET_MOUSE_RIGHTDOWN  = MOUSEEVENTF_RIGHTDOWN;
+  PACKET_MOUSE_RIGHTUP    = MOUSEEVENTF_RIGHTUP;
+  PACKET_MOUSE_MIDDLEDOWN = MOUSEEVENTF_MIDDLEDOWN;
+  PACKET_MOUSE_MIDDLEUP   = MOUSEEVENTF_MIDDLEUP;
+  PACKET_MOUSE_WHEEL      = MOUSEEVENTF_WHEEL;

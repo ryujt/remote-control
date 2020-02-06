@@ -13,9 +13,7 @@ type
     ptPeerConnected,
     ptText,
     ptKeyDown, ptKeyUp,
-    ptMouseDownLeft, ptMouseDownMiddle, ptMouseDownRight,
-    ptMouseMoveLeft, ptMouseMoveMiddle, ptMouseMoveRight,
-    ptMouseUpLeft, ptMouseUpMiddle, ptMouseUpRight
+    ptMouseDown, ptMouseMove, ptMouseUp
   );
 
   TConnectionIDPacket = packed record

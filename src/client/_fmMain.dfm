@@ -10,47 +10,57 @@ object fmMain: TfmMain
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyUp = FormKeyUp
   PixelsPerInch = 96
   TextHeight = 13
-  object Button1: TButton
-    Left = 135
-    Top = 6
-    Width = 75
-    Height = 25
-    Caption = 'Button1'
-    TabOrder = 0
-    OnClick = Button1Click
-  end
-  object Edit1: TEdit
-    Left = 8
-    Top = 8
-    Width = 121
-    Height = 21
-    TabOrder = 1
-    Text = 'Edit1'
-  end
-  inline frDeskScreen1: TfrDeskScreen
-    Left = 8
-    Top = 35
-    Width = 992
-    Height = 686
+  inline frDeskScreen: TfrDeskScreen
+    Left = 0
+    Top = 37
+    Width = 1008
+    Height = 692
+    Align = alClient
     Color = clBlack
     ParentBackground = False
     ParentColor = False
-    TabOrder = 2
+    TabOrder = 0
     ExplicitLeft = 8
     ExplicitTop = 35
     ExplicitWidth = 992
     ExplicitHeight = 686
     inherited ScrollBox: TScrollBox
-      Width = 992
-      Height = 686
-      ExplicitLeft = 0
-      ExplicitTop = 0
+      Width = 1008
+      Height = 692
       ExplicitWidth = 992
       ExplicitHeight = 686
+    end
+  end
+  object plTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 1008
+    Height = 37
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 1
+    object btConnect: TButton
+      Left = 135
+      Top = 6
+      Width = 75
+      Height = 25
+      Caption = #51217#49549
+      TabOrder = 0
+      OnClick = btConnectClick
+    end
+    object edCode: TEdit
+      Left = 8
+      Top = 8
+      Width = 121
+      Height = 21
+      TabOrder = 1
     end
   end
 end

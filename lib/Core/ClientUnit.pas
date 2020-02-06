@@ -6,11 +6,14 @@ uses
   Config, Protocols,
   DeskZipUtils, DeskZipUnit, DeskUnZipUnit,
   DebugTools, SuperSocketUtils, SuperSocketClient, JsonData,
-  SysUtils, Classes, TypInfo, Forms;
+  Windows, SysUtils, Classes, TypInfo, Forms;
 
 type
   TClientUnit = class
   private
+    // 지금 처음 화면 전송을 시작하는가?
+    FIsFirstScreen : boolean;
+
     FJsonData : TJsonData;
     FDeskZip : TDeskZipUnit;
     FDeskUnZip : TDeskUnZipUnit;
@@ -19,7 +22,10 @@ type
     procedure on_FSocket_connected(ASender:TObject);
     procedure on_FSocket_disconnected(ASender:TObject);
     procedure on_FSocket_Received(ASender:TObject; APacket:PPacket);
-
+  private
+    procedure do_deskzip_packet(APacket:PPacket);
+    procedure do_remote_control_packet(APacket:PPacket);
+  private
     procedure rp_Text(APacket:PPacket);
   private
     FConnectionID: integer;
@@ -37,6 +43,13 @@ type
 
     procedure sp_SetConnectionID(AID:integer);
     procedure sp_AskDeskZip;
+
+    procedure sp_MouseDown(AMode,AX,AY:integer);
+    procedure sp_MouseMove(AX,AY:integer);
+    procedure sp_MouseUp(AMode,AX,AY:integer);
+
+    procedure sp_KeyDown(AKey:integer);
+    procedure sp_KeyUp(AKey:integer);
   public
     property Connected : boolean read GetConnected;
     property ConnectionID : integer read FConnectionID;
@@ -77,29 +90,8 @@ begin
 //  Trace( Format('TClientUnit.on_FSocket_Received - %d', [APacket^.PacketType]) );
   {$ENDIF}
 
-  case TPacketType(APacket^.PacketType) of
-    ptPeerConnected: begin
-      // TODO: 모니터 선택 가능하도록
-      FDeskZip.Prepare(Screen.Monitors[0].Width, Screen.Monitors[0].Height);
-    end;
-
-    ptText: rp_Text(APacket);
-  end;
-
-  if APacket^.PacketType >= 100 then Exit;
-
-  case TFrameType(APacket^.PacketType) of
-    ftNeedNext: ;
-    ftAskDeskZip: FDeskZip.Execute;
-    ftEndOfDeskZip: ;
-
-    ftFrameStart, ftBitmap, ftJpeg, ftPixel: FDeskUnZip.Execute(APacket);
-
-    ftFrameEnd: begin
-      FDeskUnZip.Execute(APacket);
-      sp_AskDeskZip
-    end;
-  end;
+  if APacket^.PacketType < 100 then do_deskzip_packet(APacket)
+  else do_remote_control_packet(APacket);
 end;
 
 procedure TClientUnit.rp_Text(APacket: PPacket);
@@ -131,6 +123,61 @@ begin
   FSocket.Send(@packet);
 end;
 
+procedure TClientUnit.sp_KeyDown(AKey: integer);
+var
+  packet : TRemoteControlPacket;
+begin
+  packet.PacketSize := SizeOf(TRemoteControlPacket);
+  packet.PacketType := ptKeyDown;
+  packet.Key := AKey;
+  FSocket.Send(@packet);
+end;
+
+procedure TClientUnit.sp_KeyUp(AKey: integer);
+var
+  packet : TRemoteControlPacket;
+begin
+  packet.PacketSize := SizeOf(TRemoteControlPacket);
+  packet.PacketType := ptKeyUp;
+  packet.Key := AKey;
+  FSocket.Send(@packet);
+end;
+
+procedure TClientUnit.sp_MouseDown(AMode, AX, AY: integer);
+var
+  packet : TRemoteControlPacket;
+begin
+  packet.PacketSize := SizeOf(TRemoteControlPacket);
+  packet.PacketType := ptMouseDown;
+  packet.Key := AMode;
+  packet.X := AX;
+  packet.Y := AY;
+  FSocket.Send(@packet);
+end;
+
+procedure TClientUnit.sp_MouseMove(AX, AY: integer);
+var
+  packet : TRemoteControlPacket;
+begin
+  packet.PacketSize := SizeOf(TRemoteControlPacket);
+  packet.PacketType := ptMouseMove;
+  packet.X := AX;
+  packet.Y := AY;
+  FSocket.Send(@packet);
+end;
+
+procedure TClientUnit.sp_MouseUp(AMode, AX, AY: integer);
+var
+  packet : TRemoteControlPacket;
+begin
+  packet.PacketSize := SizeOf(TRemoteControlPacket);
+  packet.PacketType := ptMouseUp;
+  packet.Key := AMode;
+  packet.X := AX;
+  packet.Y := AY;
+  FSocket.Send(@packet);
+end;
+
 procedure TClientUnit.sp_SetConnectionID(AID: integer);
 var
   packet : TConnectionIDPacket;
@@ -150,6 +197,7 @@ end;
 
 procedure TClientUnit.Connect;
 begin
+  FIsFirstScreen := true;
   FSocket.Connect(HOST, PORT);
 end;
 
@@ -158,6 +206,7 @@ begin
   inherited;
 
   FConnectionID := -1;
+  FIsFirstScreen := true;
 
   FJsonData := TJsonData.Create;
 
@@ -183,6 +232,48 @@ end;
 procedure TClientUnit.Discoonect;
 begin
   FSocket.Disconnect;
+end;
+
+procedure TClientUnit.do_deskzip_packet(APacket: PPacket);
+begin
+  case TFrameType(APacket^.PacketType) of
+    ftNeedNext: ;
+
+    ftAskDeskZip: begin
+      // TODO: 모니터 선택 가능하도록
+      if FIsFirstScreen then FDeskZip.Prepare(Screen.Monitors[0].Width, Screen.Monitors[0].Height);
+      FIsFirstScreen := false;
+
+      FDeskZip.Execute;
+    end;
+
+    ftEndOfDeskZip: ;
+
+    ftFrameStart,ftBitmap, ftJpeg, ftPixel: FDeskUnZip.Execute(APacket);
+
+    ftFrameEnd: begin
+      FDeskUnZip.Execute(APacket);
+      sp_AskDeskZip
+    end;
+  end;
+end;
+
+procedure TClientUnit.do_remote_control_packet(APacket: PPacket);
+const
+  KEYEVENTF_KEYDOWN = 0;
+var
+  packet : PRemoteControlPacket absolute APacket;
+begin
+  case TPacketType(APacket^.PacketType) of
+    ptPeerConnected: ;
+    ptText: rp_Text(APacket);
+
+    ptMouseMove: SetCursorPos(packet^.X, packet^.Y);
+    ptMouseDown, ptMouseUp: Mouse_Event(packet^.Key, packet^.X, packet^.Y, 0, 0);
+
+    ptKeyDown:  Keybd_Event(packet^.Key, MapVirtualKey(packet^.Key, 0), KEYEVENTF_KEYDOWN,  0);
+    ptKeyUp: Keybd_Event(packet^.Key, MapVirtualKey(packet^.Key, 0), KEYEVENTF_KEYUP,  0);
+  end;
 end;
 
 function TClientUnit.GetConnected: boolean;
