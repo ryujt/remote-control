@@ -44,5 +44,13 @@ object fmMain: TfmMain
     ExplicitTop = 35
     ExplicitWidth = 992
     ExplicitHeight = 686
+    inherited ScrollBox: TScrollBox
+      Width = 992
+      Height = 686
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 992
+      ExplicitHeight = 686
+    end
   end
 end

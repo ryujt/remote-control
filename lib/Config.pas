@@ -3,7 +3,7 @@ unit Config;
 interface
 
 const
-  Host = '127.0.0.1';
+  Host = '182.252.178.102';
   PORT = 8282;
 
   MEMORY_POOL_SIZE_32 = 1024 * 1024 * 512;
