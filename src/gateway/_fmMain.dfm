@@ -1,7 +1,7 @@
-object Form3: TForm3
+object fmMain: TfmMain
   Left = 0
   Top = 0
-  Caption = 'RemoteControl - Gateway server'
+  Caption = 'Remote control - Gateway'
   ClientHeight = 44
   ClientWidth = 331
   Color = clBtnFace
@@ -11,7 +11,14 @@ object Form3: TForm3
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
+  object tmClose: TTimer
+    Enabled = False
+    OnTimer = tmCloseTimer
+    Left = 24
+    Top = 8
+  end
 end

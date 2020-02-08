@@ -75,8 +75,7 @@ procedure TDeskUnZipUnit.do_execute(APacket: PPacket);
 begin
   try
     FDeskUnZip.Execute(pointer(APacket));
-    if APacket^.PacketType = Byte(ftFrameEnd) then
-      TCore.Obj.View.sp_DeskScreenIsReady;
+    if APacket^.PacketType = Byte(ftFrameEnd) then TCore.Obj.View.sp_DeskScreenIsReady;
   finally
     FreeMem(APacket);
   end;
@@ -121,8 +120,7 @@ procedure TDeskUnZipUnit.on_DeskZip_task(Sender: TObject; ATask: integer;
   AText: string; AData: pointer; ASize, ATag: integer);
 begin
   case ATask of
-    TASK_DESKZIP:
-      do_execute(AData);
+    TASK_DESKZIP: do_execute(AData);
   end;
 end;
 

@@ -41,8 +41,23 @@ type
     /// 프로그램 종료
     procedure sp_Terminate(AMsg: string);
 
+    /// Gateway 서버에 접속되었다.
+    procedure sp_Connected;
+
+    /// Gateway 서버로부터 접속이 끊어졌다.
+    procedure sp_Disconnected;
+
     /// 로그인 결과 자신의 Connection ID를 알게 되었다.
     procedure sp_ConnectionID(AID: integer);
+
+    /// 잘못된 서버(화면공유자)의 ID로 연결 시도 하였다.
+    procedure sp_ErPeerConnected;
+
+    /// 서버(화면공유자)와 클라이언트(원격조정자)가 연결되었다.
+    procedure sp_PeerConnected;
+
+    /// 상대방의 접속이 끊어졌다.
+    procedure sp_PeerDisconnected;
 
     /// DeskZip 화면 수신이 완료되어 표시할 준비가 되었다.
     procedure sp_DeskScreenIsReady;
@@ -94,6 +109,19 @@ begin
   FObserverList.Active := Value;
 end;
 
+procedure TViewBase.sp_Connected;
+var
+  Params: TJsonData;
+begin
+  Params := TJsonData.Create;
+  try
+    Params.Values['Code'] := 'Connected';
+    FObserverList.AsyncBroadcast(Params);
+  finally
+    Params.Free;
+  end;
+end;
+
 procedure TViewBase.sp_ConnectionID(AID: integer);
 var
   Params: TJsonData;
@@ -122,6 +150,33 @@ begin
   end;
 end;
 
+procedure TViewBase.sp_Disconnected;
+var
+  Params: TJsonData;
+begin
+  Params := TJsonData.Create;
+  try
+    Params.Values['Code'] := 'Disconnected';
+    FObserverList.AsyncBroadcast(Params);
+  finally
+    Params.Free;
+  end;
+end;
+
+procedure TViewBase.sp_ErPeerConnected;
+var
+  Params: TJsonData;
+begin
+  Params := TJsonData.Create;
+  try
+    Params.Values['Code'] := 'ErPeerConnected';
+
+    FObserverList.AsyncBroadcast(Params);
+  finally
+    Params.Free;
+  end;
+end;
+
 procedure TViewBase.sp_Finalize;
 var
   Params: TJsonData;
@@ -142,6 +197,32 @@ begin
   Params := TJsonData.Create;
   try
     Params.Values['Code'] := 'Initialize';
+    FObserverList.AsyncBroadcast(Params);
+  finally
+    Params.Free;
+  end;
+end;
+
+procedure TViewBase.sp_PeerConnected;
+var
+  Params: TJsonData;
+begin
+  Params := TJsonData.Create;
+  try
+    Params.Values['Code'] := 'PeerConnected';
+    FObserverList.AsyncBroadcast(Params);
+  finally
+    Params.Free;
+  end;
+end;
+
+procedure TViewBase.sp_PeerDisconnected;
+var
+  Params: TJsonData;
+begin
+  Params := TJsonData.Create;
+  try
+    Params.Values['Code'] := 'PeerDisconnected';
     FObserverList.AsyncBroadcast(Params);
   finally
     Params.Free;

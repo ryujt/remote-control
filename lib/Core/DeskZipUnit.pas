@@ -44,8 +44,7 @@ constructor TDeskZipUnit.Create(ASocket: IClientUnitInterface);
 begin
   FSocket := ASocket;
 
-  FDeskZip := TDeskZip.Create;
-  FDeskZip.setSpeed(SPEED_FAST);
+  FDeskZip := nil;
 
   FScheduler := TScheduler.Create;
   FScheduler.OnRepeat := on_DeskZip_repeat;
@@ -54,7 +53,8 @@ end;
 
 destructor TDeskZipUnit.Destroy;
 begin
-  FreeAndNil(FDeskZip);
+  if FDeskZip <> nil then FDeskZip.Free;
+
   FreeAndNil(FScheduler);
 
   inherited;
@@ -64,6 +64,8 @@ procedure TDeskZipUnit.do_execute;
 var
   frame: PFrameBase;
 begin
+  if FDeskZip = nil then Exit;
+
   FDeskZip.Execute(0, 0);
   frame := FDeskZip.GetDeskFrame;
   while frame <> nil do
@@ -77,8 +79,11 @@ end;
 
 procedure TDeskZipUnit.do_prepare(AMonitorIndex: integer);
 begin
-  FDeskZip.Prepare(Screen.Monitors[AMonitorIndex].Width,
-    Screen.Monitors[AMonitorIndex].Height);
+  if FDeskZip <> nil then FDeskZip.Free;
+
+  FDeskZip := TDeskZip.Create;
+  FDeskZip.setSpeed(SPEED_FAST);
+  FDeskZip.Prepare(Screen.Monitors[AMonitorIndex].Width, Screen.Monitors[AMonitorIndex].Height);
 end;
 
 procedure TDeskZipUnit.Execute;
@@ -94,11 +99,14 @@ end;
 procedure TDeskZipUnit.on_DeskZip_task(Sender: TObject; ATask: integer;
   AText: string; AData: pointer; ASize, ATag: integer);
 begin
+  try
   case ATask of
-    TASK_PREPARE:
-      do_prepare(ATag);
-    TASK_EXECUTE:
-      do_execute;
+    TASK_PREPARE: do_prepare(ATag);
+    TASK_EXECUTE: do_execute;
+  end;
+  except
+    // TODO: 에러 처리
+    on E : Exception do Trace('TDeskZipUnit.do_execute');
   end;
 end;
 

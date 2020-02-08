@@ -19,7 +19,9 @@ type
   private
     procedure rp_SetConnectionID(AConnection:TConnection; APacket:PPacket);
   private
+    procedure sp_ErPeerConnected(AConnection:TConnection);
     procedure sp_PeerConnected(AConnection:TConnection);
+    procedure sp_PeerDisconnected(AConnection:TConnection);
   public
     constructor Create;
     destructor Destroy; override;
@@ -62,6 +64,8 @@ begin
   {$IFDEF DEBUG}
   Trace('TVideoServer.on_FSocket_Disconnected - ' + AConnection.Text);
   {$ENDIF}
+
+  if AConnection.Tag <> -1 then sp_PeerDisconnected(FSocket.ConnectionList.Items[AConnection.Tag]);
 end;
 
 procedure TServerUnit.on_FSocket_Received(AConnection: TConnection;
@@ -88,17 +92,33 @@ end;
 procedure TServerUnit.rp_SetConnectionID(AConnection: TConnection;
   APacket: PPacket);
 var
+  server : TConnection;
   packet : PConnectionIDPacket absolute APacket;
 begin
   {$IFDEF DEBUG}
   Trace('TVideoServer.rp_SetConnectionID - ' + Format('%d <--> %d', [packet^.ID, AConnection.ID]));
   {$ENDIF}
 
-  AConnection.Tag := packet^.ID;
-  FSocket.ConnectionList.Items[packet^.ID].Tag := AConnection.ID;
+  server := FSocket.ConnectionList.Items[packet^.ID];
 
-  sp_PeerConnected(AConnection);
-  sp_PeerConnected(FSocket.ConnectionList.Items[packet^.ID]);
+  if server.ID <> packet^.ID then begin
+    sp_ErPeerConnected(AConnection);
+  end else begin
+    server.Tag := AConnection.ID;
+    AConnection.Tag := packet^.ID;
+
+    sp_PeerConnected(AConnection);
+    sp_PeerConnected(server);
+  end;
+end;
+
+procedure TServerUnit.sp_ErPeerConnected(AConnection: TConnection);
+var
+  packet : TPacket;
+begin
+  packet.PacketSize := 3;
+  packet.PacketType := Byte(ptErPeerConnected);
+  AConnection.Send( GetPacketClone(FMemoryPool, @packet) );
 end;
 
 procedure TServerUnit.sp_PeerConnected(AConnection: TConnection);
@@ -107,6 +127,15 @@ var
 begin
   packet.PacketSize := 3;
   packet.PacketType := Byte(ptPeerConnected);
+  AConnection.Send( GetPacketClone(FMemoryPool, @packet) );
+end;
+
+procedure TServerUnit.sp_PeerDisconnected(AConnection: TConnection);
+var
+  packet : TPacket;
+begin
+  packet.PacketSize := 3;
+  packet.PacketType := Byte(ptPeerDisconnected);
   AConnection.Send( GetPacketClone(FMemoryPool, @packet) );
 end;
 
@@ -132,7 +161,7 @@ begin
 
   FSocket := TSuperSocketServer.Create(false);
   FSocket.UseNagel := false;
-  FSocket.Port := PORT;
+  FSocket.Port := Gateway_Port;
   FSocket.OnConnected := on_FSocket_Connected;
   FSocket.OnDisconnected := on_FSocket_Disconnected;
   FSocket.OnReceived := on_FSocket_Received;

@@ -32,6 +32,9 @@ type
 
 implementation
 
+uses
+  ClientUnit;
+
 var
   MyObject : TCore = nil;
 
@@ -63,6 +66,8 @@ begin
 
   FView.sp_Finalize;
   FView.Active := false;
+
+  TClientUnit.Obj.Terminate;
 end;
 
 procedure TCore.Initialize;

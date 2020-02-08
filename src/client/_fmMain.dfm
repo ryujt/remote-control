@@ -1,7 +1,7 @@
 object fmMain: TfmMain
   Left = 0
   Top = 0
-  Caption = 'RemoteControl - Client'
+  Caption = 'Remote control - '#49436#48260' '#51217#49549' '#51473
   ClientHeight = 729
   ClientWidth = 1008
   Color = clBtnFace
@@ -12,7 +12,9 @@ object fmMain: TfmMain
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  OnClose = FormClose
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
   PixelsPerInch = 96
@@ -45,12 +47,13 @@ object fmMain: TfmMain
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
+    Visible = False
     object btConnect: TButton
       Left = 135
       Top = 6
       Width = 75
       Height = 25
-      Caption = #51217#49549
+      Caption = #50672#44208
       TabOrder = 0
       OnClick = btConnectClick
     end
@@ -61,5 +64,11 @@ object fmMain: TfmMain
       Height = 21
       TabOrder = 1
     end
+  end
+  object tmClose: TTimer
+    Enabled = False
+    OnTimer = tmCloseTimer
+    Left = 24
+    Top = 64
   end
 end
