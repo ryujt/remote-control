@@ -6,7 +6,7 @@ uses
   Config, Protocols,
   DeskZipUtils, DeskZipUnit, DeskUnZipUnit,
   DebugTools, SuperSocketUtils, SuperSocketClient, JsonData,
-  Windows, SysUtils, Classes, TypInfo, Forms;
+  Windows, SysUtils, Classes, TypInfo;
 
 type
   TClientUnit = class
@@ -241,7 +241,7 @@ begin
 
     ftAskDeskZip: begin
       // TODO: 모니터 선택 가능하도록
-      if FIsFirstScreen then FDeskZip.Prepare(Screen.Monitors[0].Width, Screen.Monitors[0].Height);
+      if FIsFirstScreen then FDeskZip.Prepare(0);
       FIsFirstScreen := false;
 
       FDeskZip.Execute;
@@ -271,7 +271,7 @@ begin
     ptMouseMove: SetCursorPos(packet^.X, packet^.Y);
     ptMouseDown, ptMouseUp: Mouse_Event(packet^.Key, packet^.X, packet^.Y, 0, 0);
 
-    ptKeyDown:  Keybd_Event(packet^.Key, MapVirtualKey(packet^.Key, 0), KEYEVENTF_KEYDOWN,  0);
+    ptKeyDown: Keybd_Event(packet^.Key, MapVirtualKey(packet^.Key, 0), KEYEVENTF_KEYDOWN,  0);
     ptKeyUp: Keybd_Event(packet^.Key, MapVirtualKey(packet^.Key, 0), KEYEVENTF_KEYUP,  0);
   end;
 end;

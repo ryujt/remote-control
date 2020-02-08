@@ -6,10 +6,11 @@ uses
   Config,
   DeskZipUtils, DeskZip,
   DebugTools, RyuLibBase, Scheduler, DynamicQueue, SuperSocketUtils, SuperSocketClient,
-  Windows, SysUtils, Classes, Graphics;
+  Windows, SysUtils, Classes, Graphics, Forms;
 
 const
-  TASK_EXECUTE = 1;
+  TASK_PREPARE = 1;
+  TASK_EXECUTE = 2;
 
 type
   TDeskZipUnit = class
@@ -21,6 +22,7 @@ type
     procedure on_DeskZip_repeat(Sender:TObject);
     procedure on_DeskZip_task(Sender:TObject; ATask:integer; AText:string; AData:pointer; ASize:integer; ATag:integer);
 
+    procedure do_prepare(AMonitorIndex:integer);
     procedure do_execute;
   public
     constructor Create(ASocket:TSuperSocketClient); reintroduce;
@@ -28,7 +30,7 @@ type
 
     procedure Terminate;
 
-    procedure Prepare(AWidth,AHeight:integer);
+    procedure Prepare(AMonitorIndex:integer);
     procedure Execute;
   end;
 
@@ -67,6 +69,11 @@ begin
   end;
 end;
 
+procedure TDeskZipUnit.do_prepare(AMonitorIndex: integer);
+begin
+  FDeskZip.Prepare(Screen.Monitors[AMonitorIndex].Width, Screen.Monitors[AMonitorIndex].Height);
+end;
+
 procedure TDeskZipUnit.Execute;
 begin
   FScheduler.Add(TASK_EXECUTE);
@@ -81,13 +88,14 @@ procedure TDeskZipUnit.on_DeskZip_task(Sender: TObject; ATask: integer;
   AText: string; AData: pointer; ASize, ATag: integer);
 begin
   case ATask of
+    TASK_PREPARE: do_prepare(ATag);
     TASK_EXECUTE: do_execute;
   end;
 end;
 
-procedure TDeskZipUnit.Prepare(AWidth, AHeight: integer);
+procedure TDeskZipUnit.Prepare(AMonitorIndex: integer);
 begin
-  FDeskZip.Prepare(AWidth, AHeight);
+  FScheduler.Add(TASK_PREPARE, '', nil, 0, AMonitorIndex);
 end;
 
 procedure TDeskZipUnit.Terminate;
