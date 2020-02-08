@@ -105,7 +105,6 @@
         </DelphiCompile>
         <DCCReference Include="_fmMain.pas">
             <Form>fmMain</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\..\lib\Config.pas"/>
         <DCCReference Include="..\..\lib\Global.pas"/>
