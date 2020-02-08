@@ -45,6 +45,7 @@ begin
   FSocket := ASocket;
 
   FDeskZip := TDeskZip.Create;
+  FDeskZip.setSpeed(SPEED_FAST);
 
   FScheduler := TScheduler.Create;
   FScheduler.OnRepeat := on_DeskZip_repeat;
