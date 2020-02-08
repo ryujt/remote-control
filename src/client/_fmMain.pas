@@ -3,7 +3,8 @@ unit _fmMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, _frDeskScreen,
   Vcl.ExtCtrls;
 
@@ -34,7 +35,7 @@ uses
 procedure TfmMain.btConnectClick(Sender: TObject);
 begin
   plTop.Visible := false;
-  TClientUnit.Obj.sp_SetConnectionID( StrToIntDef(edCode.Text, 0) );
+  TClientUnit.Obj.sp_SetConnectionID(StrToIntDef(edCode.Text, 0));
 end;
 
 procedure TfmMain.FormCreate(Sender: TObject);

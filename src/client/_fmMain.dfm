@@ -27,15 +27,14 @@ object fmMain: TfmMain
     ParentBackground = False
     ParentColor = False
     TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 35
-    ExplicitWidth = 992
-    ExplicitHeight = 686
+    ExplicitTop = 37
+    ExplicitWidth = 1008
+    ExplicitHeight = 692
     inherited ScrollBox: TScrollBox
       Width = 1008
       Height = 692
-      ExplicitWidth = 992
-      ExplicitHeight = 686
+      ExplicitWidth = 1008
+      ExplicitHeight = 692
     end
   end
   object plTop: TPanel

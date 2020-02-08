@@ -7,48 +7,48 @@ uses
   Classes, SysUtils, Graphics;
 
 type
-  TViewBase = class (TComponent)
+  TViewBase = class(TComponent)
   private
     function GetActive: boolean;
     procedure SetActive(const Value: boolean);
   protected
-    FObserverList : TObserverList;
+    FObserverList: TObserverList;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     /// 메시지를 수신 할 객체를 등록한다.
-    procedure Add(Observer:TObject);  
+    procedure Add(Observer: TObject);
 
     /// Observer에게 메시지 전송을 중단한다.
-    procedure Remove(Observer:TObject);  
+    procedure Remove(Observer: TObject);
 
     /// 등록 된 모든 Observer에게 메시지를 전송한다.
-    procedure AsyncBroadcast(AMsg:string);
+    procedure AsyncBroadcast(AMsg: string);
 
     /// TCore가 초기화 됐다.
     procedure sp_Initialize;
 
     /// TCore의 종료처리가 시작됐다.
-    procedure sp_Finalize;    
+    procedure sp_Finalize;
 
     /// 모든 View 객체들이 생성 되었다.
-    procedure sp_ViewIsReady;  
+    procedure sp_ViewIsReady;
 
     /// 시스템 내부에서 경고 메시지를 출력하고자 할 때 쓰인다.
-    procedure sp_SystemMessage(AMsg:string; AColor:TColor=clRed);
+    procedure sp_SystemMessage(AMsg: string; AColor: TColor = clRed);
 
     /// 프로그램 종료
-    procedure sp_Terminate(AMsg:string);
+    procedure sp_Terminate(AMsg: string);
 
     /// 로그인 결과 자신의 Connection ID를 알게 되었다.
-    procedure sp_ConnectionID(AID:integer);
+    procedure sp_ConnectionID(AID: integer);
 
     /// DeskZip 화면 수신이 완료되어 표시할 준비가 되었다.
     procedure sp_DeskScreenIsReady;
   published
     /// 메시지 전송 중인 가?
-    property Active : boolean read GetActive write SetActive;  
+    property Active: boolean read GetActive write SetActive;
   end;
 
 implementation
@@ -62,7 +62,7 @@ end;
 
 procedure TViewBase.AsyncBroadcast(AMsg: string);
 begin
-  FObserverList.AsyncBroadcast( AMsg );
+  FObserverList.AsyncBroadcast(AMsg);
 end;
 
 constructor TViewBase.Create(AOwner: TComponent);
@@ -96,7 +96,7 @@ end;
 
 procedure TViewBase.sp_ConnectionID(AID: integer);
 var
-  Params : TJsonData;
+  Params: TJsonData;
 begin
   Params := TJsonData.Create;
   try
@@ -110,7 +110,7 @@ end;
 
 procedure TViewBase.sp_DeskScreenIsReady;
 var
-  Params : TJsonData;
+  Params: TJsonData;
 begin
   Params := TJsonData.Create;
   try
@@ -124,7 +124,7 @@ end;
 
 procedure TViewBase.sp_Finalize;
 var
-  Params : TJsonData;
+  Params: TJsonData;
 begin
   Params := TJsonData.Create;
   try
@@ -137,7 +137,7 @@ end;
 
 procedure TViewBase.sp_Initialize;
 var
-  Params : TJsonData;
+  Params: TJsonData;
 begin
   Params := TJsonData.Create;
   try
@@ -150,7 +150,7 @@ end;
 
 procedure TViewBase.sp_SystemMessage(AMsg: string; AColor: TColor);
 var
-  Params : TJsonData;
+  Params: TJsonData;
 begin
   Params := TJsonData.Create;
   try
@@ -166,12 +166,12 @@ end;
 
 procedure TViewBase.sp_Terminate(AMsg: string);
 var
-  Params : TJsonData;
+  Params: TJsonData;
 begin
   Params := TJsonData.Create;
   try
     Params.Values['Code'] := 'Terminate';
-    Params.Values['Msg']  := AMsg;
+    Params.Values['Msg'] := AMsg;
 
     FObserverList.AsyncBroadcast(Params);
   finally
@@ -181,7 +181,7 @@ end;
 
 procedure TViewBase.sp_ViewIsReady;
 var
-  Params : TJsonData;
+  Params: TJsonData;
 begin
   Params := TJsonData.Create;
   try

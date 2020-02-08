@@ -9,10 +9,11 @@ uses
   ViewBase in '..\..\lib\Core\ViewBase.pas',
   Config in '..\..\lib\Config.pas',
   Global in '..\..\lib\Global.pas',
-  Protocols in '..\..\lib\Protocols.pas',
   DeskZipUnit in '..\..\lib\Core\DeskZipUnit.pas',
   DeskUnZipUnit in '..\..\lib\Core\DeskUnZipUnit.pas',
-  _frDeskScreen in '_frDeskScreen.pas' {frDeskScreen: TFrame};
+  _frDeskScreen in '_frDeskScreen.pas' {frDeskScreen: TFrame},
+  ClientUnitInterface in '..\..\lib\Core\ClientUnitInterface.pas',
+  Protocols in '..\..\lib\Core\Protocols.pas';
 
 {$R *.res}
 
@@ -21,4 +22,5 @@ begin
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfmMain, fmMain);
   Application.Run;
+
 end.

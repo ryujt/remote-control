@@ -109,13 +109,14 @@
         </DCCReference>
         <DCCReference Include="..\..\lib\Config.pas"/>
         <DCCReference Include="..\..\lib\Global.pas"/>
-        <DCCReference Include="..\..\lib\Protocols.pas"/>
         <DCCReference Include="..\..\lib\Core\ViewBase.pas"/>
         <DCCReference Include="..\..\lib\Core\ClientUnit.pas"/>
         <DCCReference Include="Core\Core.pas"/>
         <DCCReference Include="Core\View.pas"/>
         <DCCReference Include="..\..\lib\Core\DeskZipUnit.pas"/>
         <DCCReference Include="..\..\lib\Core\DeskUnZipUnit.pas"/>
+        <DCCReference Include="..\..\lib\Core\Protocols.pas"/>
+        <DCCReference Include="..\..\lib\Core\ClientUnitInterface.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

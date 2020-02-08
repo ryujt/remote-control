@@ -9,23 +9,23 @@ uses
 
 type
   /// Application의 핵심 기능을 모아둔 클래스 이다.
-  TCore = class (TComponent)
+  TCore = class(TComponent)
   private
-    FIsInitialized : boolean;
-    FIsfinalized : boolean;
+    FIsInitialized: boolean;
+    FIsfinalized: boolean;
   private
     FView: TView;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    class function Obj:TCore;
+    class function Obj: TCore;
 
     /// TCore에서 사용하는 객체들에 대한 초기화.
-    procedure Initialize;  
+    procedure Initialize;
 
     /// TCore에서 사용하는 객체들에 대한 종료 처리.
-    procedure Finalize;  
+    procedure Finalize;
   published
     property View: TView read FView;
   end;
@@ -33,9 +33,9 @@ type
 implementation
 
 var
-  MyObject : TCore = nil;
+  MyObject: TCore = nil;
 
-{ TCore }
+  { TCore }
 
 constructor TCore.Create(AOwner: TComponent);
 begin
@@ -58,7 +58,8 @@ end;
 
 procedure TCore.Finalize;
 begin
-  if FIsfinalized then Exit;
+  if FIsfinalized then
+    Exit;
   FIsfinalized := true;
 
   FView.sp_Finalize;
@@ -67,9 +68,11 @@ end;
 
 procedure TCore.Initialize;
 begin
-  if FIsfinalized then Exit;
+  if FIsfinalized then
+    Exit;
 
-  if FIsInitialized then Exit;
+  if FIsInitialized then
+    Exit;
   FIsInitialized := true;
 
   FView.sp_Initialize;
@@ -77,7 +80,8 @@ end;
 
 class function TCore.Obj: TCore;
 begin
-  if MyObject = nil then MyObject := TCore.Create(nil);
+  if MyObject = nil then
+    MyObject := TCore.Create(nil);
   Result := MyObject;
 end;
 
