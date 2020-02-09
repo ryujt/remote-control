@@ -1,5 +1,9 @@
 # Remote Control
 
+## Requirement
+* https://github.com/ryujt/ryulib-delphi
+* https://github.com/ryujt/supersocket
+
 ## 사용방법
 
 ### Gateway 서버 실행
