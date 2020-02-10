@@ -1,4 +1,4 @@
-> DeskZip.dll은 개인 사용 목적으로만 사용이 가능합니다.
+> DeskZip.dll은 개인적인 사용만 가능합니다.
 
 # Remote Control
 
