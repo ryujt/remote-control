@@ -1,5 +1,4 @@
 > DeskZip.dll은 개인의 사용이 아닌 경우에는 허용하지 않습니다.
-> DeskZip.dll의 라이센스 문의는 ryujt658@hanmail.net으로 해주시기 바랍니다.
 
 # Remote Control
 
