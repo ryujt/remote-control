@@ -5,7 +5,7 @@ interface
 uses
   Config, Global, RemoteControlUtils,
   DebugTools, SuperSocketUtils, SuperSocketServer, MemoryPool,
-  SysUtils, Classes;
+  SysUtils, Classes, TypInfo;
 
 type
   TRemoteGateway = class
@@ -70,32 +70,34 @@ begin
   Trace('TServerUnit.on_FSocket_Disconnected - ' + AConnection.Text);
   {$ENDIF}
 
-  if AConnection.Tag <> -1 then sp_PeerDisconnected(FSocket.ConnectionList.Items[AConnection.Tag]);
+  sp_PeerDisconnected(FSocket.ConnectionList.Items[AConnection.Tag]);
 end;
 
 procedure TRemoteGateway.on_FSocket_Received(AConnection: TConnection;
   APacket: PPacket);
 var
   packet: PPacket;
+  peer : TConnection;
   PacketType : TPacketType;
 begin
   {$IFDEF DEBUG}
   if APacket^.PacketType >= 100 then
-    Trace( Format('TServerUnit.on_FSocket_Received - %d', [APacket^.PacketType]) );
+    Trace( Format('TRemoteGateway.on_FSocket_Received - %d', [APacket^.PacketType]) );
   {$ENDIF}
 
-  Packet := GetPacketClone(FMemoryPool, APacket);
-  if Packet = nil then Exit;
+  try
+    Packet := GetPacketClone(FMemoryPool, APacket);
+    if Packet = nil then Exit;
 
-  PacketType := TPacketType(packet^.PacketType);
+    PacketType := TPacketType(packet^.PacketType);
 
-  case PacketType of
-    ptNone: ;
-    ptSetConnectionID: rp_SetConnectionID(AConnection, APacket);
-
-    else begin
-      if AConnection.Tag <> -1 then FSocket.ConnectionList.Items[AConnection.Tag].Send(packet);
+    case PacketType of
+      ptNone: ;
+      ptSetConnectionID: rp_SetConnectionID(AConnection, APacket);
+      else FSocket.ConnectionList.Items[AConnection.Tag].Send(packet);
     end;
+  except
+    Trace( Format('TRemoteGateway.on_FSocket_Received (Error) - %d', [APacket^.PacketType]) );
   end;
 end;
 
@@ -112,6 +114,7 @@ begin
   server := FSocket.ConnectionList.Items[packet^.ID];
 
   if server.ID <> packet^.ID then begin
+    Trace('TRemoteGateway.rp_SetConnectionID - ' + Format('server.ID: %d, packet^.ID: %d', [server.ID, packet^.ID]));
     sp_ErPeerConnected(AConnection);
   end else begin
     server.Tag := AConnection.ID;

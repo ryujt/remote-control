@@ -102,6 +102,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <Icon_MainIcon>remo_client_Icon.ico</Icon_MainIcon>
+        <Debugger_RunParams>host=127.0.0.1 -port=8282 -code=54611969</Debugger_RunParams>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
