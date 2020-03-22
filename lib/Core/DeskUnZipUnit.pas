@@ -3,7 +3,6 @@ unit DeskUnZipUnit;
 interface
 
 uses
-  Config, ClientUnitInterface,
   DeskZipUtils, DeskUnZip,
   DebugTools, RyuLibBase, SuperSocketUtils, Scheduler,
   Windows, SysUtils, Classes, Graphics;
@@ -14,22 +13,21 @@ const
 type
   TDeskUnZipUnit = class
   private
-    FSocket: IClientUnitInterface;
     FDeskUnZip: TDeskUnZip;
   private
     FScheduler: TScheduler;
-    procedure on_DeskUnZip_repeat(Sender: TObject);
     procedure on_DeskZip_task(Sender: TObject; ATask: integer; AText: string;
       AData: pointer; ASize: integer; ATag: integer);
 
     procedure do_execute(APacket: PPacket);
   private
+    FOnDeskScreenIsReady: TNotifyEvent;
     function GetBitmapHeight: integer;
     function getBitmapWidth: integer;
     function GetHeight: integer;
     function GetWidth: integer;
   public
-    constructor Create(ASocket: IClientUnitInterface); reintroduce;
+    constructor Create;
     destructor Destroy; override;
 
     procedure Terminate;
@@ -43,24 +41,22 @@ type
 
     property BitmapWidth: integer read getBitmapWidth;
     property BitmapHeight: integer read GetBitmapHeight;
+
+    property OnDeskScreenIsReady : TNotifyEvent read FOnDeskScreenIsReady write FOnDeskScreenIsReady;
   end;
 
 implementation
 
-uses
-  Core;
-
 { TDeskUnZipUnit }
 
-constructor TDeskUnZipUnit.Create(ASocket: IClientUnitInterface);
+constructor TDeskUnZipUnit.Create;
 begin
-  FSocket := ASocket;
+  inherited;
 
   FDeskUnZip := TDeskUnZip.Create;
 
   FScheduler := TScheduler.Create;
   FScheduler.OnTask := on_DeskZip_task;
-  FScheduler.OnRepeat := on_DeskUnZip_repeat;
 end;
 
 destructor TDeskUnZipUnit.Destroy;
@@ -75,7 +71,8 @@ procedure TDeskUnZipUnit.do_execute(APacket: PPacket);
 begin
   try
     FDeskUnZip.Execute(pointer(APacket));
-    if APacket^.PacketType = Byte(ftFrameEnd) then TCore.Obj.View.sp_DeskScreenIsReady;
+    if APacket^.PacketType = Byte(ftFrameEnd) then
+      if Assigned(FOnDeskScreenIsReady) then FOnDeskScreenIsReady(Self);
   finally
     FreeMem(APacket);
   end;
@@ -109,11 +106,6 @@ end;
 function TDeskUnZipUnit.GetWidth: integer;
 begin
   Result := FDeskUnZip.Width;
-end;
-
-procedure TDeskUnZipUnit.on_DeskUnZip_repeat(Sender: TObject);
-begin
-
 end;
 
 procedure TDeskUnZipUnit.on_DeskZip_task(Sender: TObject; ATask: integer;

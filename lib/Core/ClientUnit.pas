@@ -91,6 +91,7 @@ begin
 {$IFDEF DEBUG}
   // Trace( Format('TClientUnit.on_FSocket_Received - %d', [APacket^.PacketType]) );
 {$ENDIF}
+
   if APacket^.PacketType < 100 then do_deskzip_packet(APacket)
   else do_remote_control_packet(APacket);
 end;

@@ -3,7 +3,8 @@ unit _fmMain;
 interface
 
 uses
-  JsonData,
+  Config, RemoteServer,
+  AsyncTasks,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls;
 
@@ -13,18 +14,19 @@ type
     plMain: TPanel;
     edCode: TEdit;
     Label1: TLabel;
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure tmCloseTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCreate(Sender: TObject);
   private
+    FRemoteServer : TRemoteServer;
+    procedure on_connect_error(ASender:TObject);
+    procedure on_connected(ASender:TObject);
+    procedure on_disconnected(ASender:TObject);
+    procedure on_connection_id(ASender:TObject; AConnectionID:integer);
+    procedure on_peer_connect_error(ASender:TObject);
+    procedure on_peer_connected(ASender:TObject);
+    procedure on_peer_disconnected(ASender:TObject);
   public
-  published
-    procedure rp_Connected(AJsonData: TJsonData);
-    procedure rp_Disconnected(AJsonData: TJsonData);
-    procedure rp_ConnectionID(AJsonData:TJsonData);
-    procedure rp_PeerConnected(AJsonData:TJsonData);
-    procedure rp_PeerDisconnected(AJsonData:TJsonData);
   end;
 
 var
@@ -32,55 +34,92 @@ var
 
 implementation
 
-uses
-  Core, ClientUnit;
-
 {$R *.dfm}
 
 procedure TfmMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Hide;
   Action := caNone;
+  FRemoteServer.Terminate;
   tmClose.Enabled := true;
-  TCore.Obj.Finalize;
 end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
-  TCore.Obj.View.Add(Self);
-
-  TClientUnit.Obj.Connect;
+  FRemoteServer := TRemoteServer.Create;
+  FRemoteServer.OnConnectError := on_connect_error;
+  FRemoteServer.OnConnected := on_connected;
+  FRemoteServer.OnDisconnected := on_disconnected;
+  FRemoteServer.OnConnectionID := on_connection_id;
+  FRemoteServer.OnPeerConnectError := on_peer_connect_error;
+  FRemoteServer.OnPeerConnected := on_peer_connected;
+  FRemoteServer.OnPeerDisconnected := on_peer_disconnected;
+  FRemoteServer.Connect(Gateway_Host, Gateway_Port);
 end;
 
-procedure TfmMain.FormDestroy(Sender: TObject);
+procedure TfmMain.on_connected(ASender: TObject);
 begin
-  TCore.Obj.View.Remove(Self);
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      Caption := '원격 대기 중';
+    end
+  );
 end;
 
-procedure TfmMain.rp_Connected(AJsonData: TJsonData);
+procedure TfmMain.on_connection_id(ASender: TObject; AConnectionID: integer);
 begin
-  Caption := '원격 대기 중';
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      edCode.Text := IntToStr(AConnectionID);
+    end
+  );
 end;
 
-procedure TfmMain.rp_ConnectionID(AJsonData: TJsonData);
+procedure TfmMain.on_connect_error(ASender: TObject);
 begin
-  edCode.Text := AJsonData.Values['ID'];
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      MessageDlg('서버에 접속할 수가 없습니다.', mtError, [mbOK], 0);
+      Close;
+    end
+  );
 end;
 
-procedure TfmMain.rp_Disconnected(AJsonData: TJsonData);
+procedure TfmMain.on_disconnected(ASender: TObject);
 begin
-  MessageDlg('서버와 접속이 끊어져서 프로그램을 종료합니다.', mtWarning, [mbOK], 0);
-  Close;
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      MessageDlg('서버와 접속이 끊어져서 프로그램을 종료합니다.', mtWarning, [mbOK], 0);
+      Close;
+    end
+  );
 end;
 
-procedure TfmMain.rp_PeerConnected(AJsonData: TJsonData);
+procedure TfmMain.on_peer_connected(ASender: TObject);
 begin
-  Caption := '원격 제어 중';
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      Caption := '원격 제어 중';
+    end
+  );
 end;
 
-procedure TfmMain.rp_PeerDisconnected(AJsonData: TJsonData);
+procedure TfmMain.on_peer_connect_error(ASender: TObject);
 begin
-  Caption := '원격 대기 중';
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      Caption := '원격 접속 중에 에러가 발생';
+    end
+  );
+end;
+
+procedure TfmMain.on_peer_disconnected(ASender: TObject);
+begin
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      Caption := '원격 대기 중';
+    end
+  );
 end;
 
 procedure TfmMain.tmCloseTimer(Sender: TObject);

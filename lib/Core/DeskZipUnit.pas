@@ -3,10 +3,9 @@ unit DeskZipUnit;
 interface
 
 uses
-  Config, ClientUnitInterface,
+  Config,
   DeskZipUtils, DeskZip,
-  DebugTools, RyuLibBase, Scheduler,
-  SuperSocketClient,
+  DebugTools, Scheduler,
   Windows, SysUtils, Classes, Graphics, Forms;
 
 const
@@ -14,9 +13,10 @@ const
   TASK_EXECUTE = 2;
 
 type
+  TDataEvent = procedure (Sender:TObject; AData:pointer) of object;
+
   TDeskZipUnit = class
   private
-    FSocket: IClientUnitInterface;
     FDeskZip: TDeskZip;
   private
     FScheduler: TScheduler;
@@ -26,23 +26,29 @@ type
 
     procedure do_prepare(AMonitorIndex: integer);
     procedure do_execute;
+  private
+    FOnData: TDataEvent;
+    FOnExecuted: TNotifyEvent;
   public
-    constructor Create(ASocket: IClientUnitInterface); reintroduce;
+    constructor Create;
     destructor Destroy; override;
 
     procedure Terminate;
 
     procedure Prepare(AMonitorIndex: integer);
     procedure Execute;
+  public
+    property OnData : TDataEvent read FOnData write FOnData;
+    property OnExecuted : TNotifyEvent read FOnExecuted write FOnExecuted;
   end;
 
 implementation
 
 { TDeskZipUnit }
 
-constructor TDeskZipUnit.Create(ASocket: IClientUnitInterface);
+constructor TDeskZipUnit.Create;
 begin
-  FSocket := ASocket;
+  inherited;
 
   FDeskZip := nil;
 
@@ -68,13 +74,12 @@ begin
 
   FDeskZip.Execute(0, 0);
   frame := FDeskZip.GetDeskFrame;
-  while frame <> nil do
-  begin
-    FSocket.Send(pointer(frame));
+  while frame <> nil do begin
+    if Assigned(FOnData) then FOnData(Self, pointer(frame));
     frame := FDeskZip.GetDeskFrame;
   end;
 
-  FSocket.sp_AskDeskZip;
+  if Assigned(FOnExecuted) then FOnExecuted(Self);
 end;
 
 procedure TDeskZipUnit.do_prepare(AMonitorIndex: integer);
@@ -100,10 +105,10 @@ procedure TDeskZipUnit.on_DeskZip_task(Sender: TObject; ATask: integer;
   AText: string; AData: pointer; ASize, ATag: integer);
 begin
   try
-  case ATask of
-    TASK_PREPARE: do_prepare(ATag);
-    TASK_EXECUTE: do_execute;
-  end;
+    case ATask of
+      TASK_PREPARE: do_prepare(ATag);
+      TASK_EXECUTE: do_execute;
+    end;
   except
     // TODO: 에러 처리
     on E : Exception do Trace('TDeskZipUnit.do_execute');

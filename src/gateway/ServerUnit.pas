@@ -46,13 +46,18 @@ begin
 end;
 
 procedure TServerUnit.on_FSocket_Connected(AConnection: TConnection);
+var
+  packet : TConnectionIDPacket;
 begin
   {$IFDEF DEBUG}
-  Trace('TVideoServer.on_FSocket_Connected - ' + AConnection.Text);
+  Trace('TServerUnit.on_FSocket_Connected - ' + AConnection.Text);
   {$ENDIF}
 
-  AConnection.Send( GetTextPacket(FMemoryPool, ptText, AConnection.Text) );
+  packet.PacketSize := SizeOf(TConnectionIDPacket);
+  packet.PacketType := ptConnectionID;
+  packet.id := AConnection.ID;
 
+  AConnection.Send(@packet);
   AConnection.Tag := -1;
 
   // TODO: 추후 인증 처리 필요
@@ -74,6 +79,10 @@ var
   packet: PPacket;
   PacketType : TPacketType;
 begin
+  {$IFDEF DEBUG}
+  Trace( Format('TServerUnit.on_FSocket_Received - %d', [APacket^.PacketType]) );
+  {$ENDIF}
+
   Packet := GetPacketClone(FMemoryPool, APacket);
   if Packet = nil then Exit;
 

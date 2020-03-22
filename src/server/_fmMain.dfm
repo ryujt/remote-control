@@ -15,7 +15,6 @@ object fmMain: TfmMain
   Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object plMain: TPanel
@@ -26,10 +25,6 @@ object fmMain: TfmMain
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitLeft = 92
-    ExplicitTop = 16
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object Label1: TLabel
       Left = 16
       Top = 25

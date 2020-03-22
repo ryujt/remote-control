@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>remo_server.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -108,14 +108,9 @@
         </DCCReference>
         <DCCReference Include="..\..\lib\Config.pas"/>
         <DCCReference Include="..\..\lib\Global.pas"/>
-        <DCCReference Include="..\..\lib\Core\ViewBase.pas"/>
-        <DCCReference Include="..\..\lib\Core\ClientUnit.pas"/>
-        <DCCReference Include="Core\Core.pas"/>
-        <DCCReference Include="Core\View.pas"/>
         <DCCReference Include="..\..\lib\Core\DeskZipUnit.pas"/>
-        <DCCReference Include="..\..\lib\Core\DeskUnZipUnit.pas"/>
         <DCCReference Include="..\..\lib\Core\Protocols.pas"/>
-        <DCCReference Include="..\..\lib\Core\ClientUnitInterface.pas"/>
+        <DCCReference Include="..\..\lib\RemoteServer.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -143,6 +138,12 @@
             </Delphi.Personality>
             <Deployment Version="3">
                 <DeployFile LocalName="..\..\bin\remo_server.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>remo_server.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="..\..\bin\remo_server.exe" Configuration="Release" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>remo_server.exe</RemoteName>
                         <Overwrite>true</Overwrite>

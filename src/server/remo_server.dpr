@@ -9,14 +9,9 @@ uses
   _fmMain in '_fmMain.pas' {fmMain},
   Config in '..\..\lib\Config.pas',
   Global in '..\..\lib\Global.pas',
-  ViewBase in '..\..\lib\Core\ViewBase.pas',
-  ClientUnit in '..\..\lib\Core\ClientUnit.pas',
-  Core in 'Core\Core.pas',
-  View in 'Core\View.pas',
   DeskZipUnit in '..\..\lib\Core\DeskZipUnit.pas',
-  DeskUnZipUnit in '..\..\lib\Core\DeskUnZipUnit.pas',
   Protocols in '..\..\lib\Core\Protocols.pas',
-  ClientUnitInterface in '..\..\lib\Core\ClientUnitInterface.pas';
+  RemoteServer in '..\..\lib\RemoteServer.pas';
 
 {$R *.res}
 

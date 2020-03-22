@@ -3,14 +3,14 @@ unit _frDeskScreen;
 interface
 
 uses
-  FrameBase, JsonData,
+  AsyncTasks,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.jpeg,
   Vcl.ExtCtrls;
 
 type
-  TfrDeskScreen = class(TFrame, IFrameBase)
+  TfrDeskScreen = class(TFrame)
     ScrollBox: TScrollBox;
     Image: TImage;
     procedure ImageMouseMove(Sender: TObject; Shift: TShiftState;
@@ -20,49 +20,30 @@ type
     procedure ImageMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    procedure BeforeShow;
-    procedure AfterShow;
-    procedure BeforeClose;
+    procedure on_DeskScreenIsReady(ASender:TObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-  published
-    procedure rp_DeskScreenIsReady(AJsonData: TJsonData);
   end;
 
 implementation
 
 uses
-  Core, ClientUnit;
+  RemoteClient;
 
 {$R *.dfm}
+
 { TfrDeskScreen }
-
-procedure TfrDeskScreen.AfterShow;
-begin
-
-end;
-
-procedure TfrDeskScreen.BeforeShow;
-begin
-
-end;
-
-procedure TfrDeskScreen.BeforeClose;
-begin
-
-end;
 
 constructor TfrDeskScreen.Create(AOwner: TComponent);
 begin
   inherited;
 
-  TCore.Obj.View.Add(Self);
+  TRemoteClient.Obj.OnDeskScreenIsReady := on_DeskScreenIsReady;
 end;
 
 destructor TfrDeskScreen.Destroy;
 begin
-  TCore.Obj.View.Remove(Self);
 
   inherited;
 end;
@@ -71,39 +52,37 @@ procedure TfrDeskScreen.ImageMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   case Button of
-    mbLeft:
-      TClientUnit.Obj.sp_MouseDown(MOUSEEVENTF_LEFTDOWN, X, Y);
-    mbMiddle:
-      TClientUnit.Obj.sp_MouseDown(MOUSEEVENTF_MIDDLEDOWN, X, Y);
-    mbRight:
-      TClientUnit.Obj.sp_MouseDown(MOUSEEVENTF_RIGHTDOWN, X, Y);
+    mbLeft:   TRemoteClient.Obj.sp_MouseDown(MOUSEEVENTF_LEFTDOWN,   X, Y);
+    mbMiddle: TRemoteClient.Obj.sp_MouseDown(MOUSEEVENTF_MIDDLEDOWN, X, Y);
+    mbRight:  TRemoteClient.Obj.sp_MouseDown(MOUSEEVENTF_RIGHTDOWN,  X, Y);
   end;
 end;
 
 procedure TfrDeskScreen.ImageMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 begin
-  TClientUnit.Obj.sp_MouseMove(X, Y);
+  TRemoteClient.Obj.sp_MouseMove(X, Y);
 end;
 
 procedure TfrDeskScreen.ImageMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   case Button of
-    mbLeft:
-      TClientUnit.Obj.sp_MouseUp(MOUSEEVENTF_LEFTUP, X, Y);
-    mbMiddle:
-      TClientUnit.Obj.sp_MouseUp(MOUSEEVENTF_MIDDLEUP, X, Y);
-    mbRight:
-      TClientUnit.Obj.sp_MouseUp(MOUSEEVENTF_RIGHTUP, X, Y);
+    mbLeft:   TRemoteClient.Obj.sp_MouseUp(MOUSEEVENTF_LEFTUP,   X, Y);
+    mbMiddle: TRemoteClient.Obj.sp_MouseUp(MOUSEEVENTF_MIDDLEUP, X, Y);
+    mbRight:  TRemoteClient.Obj.sp_MouseUp(MOUSEEVENTF_RIGHTUP,  X, Y);
   end;
 end;
 
-procedure TfrDeskScreen.rp_DeskScreenIsReady(AJsonData: TJsonData);
+procedure TfrDeskScreen.on_DeskScreenIsReady(ASender: TObject);
 begin
-  TClientUnit.Obj.DeskUnZip.GetBitmap(Image.Picture.Bitmap);
-  Image.Width := TClientUnit.Obj.DeskUnZip.Width;
-  Image.Height := TClientUnit.Obj.DeskUnZip.Height;
+  AsyncTask(
+    procedure (AUserData:pointer) begin
+      TRemoteClient.Obj.GetBitmap(Image.Picture.Bitmap);
+      Image.Width := TRemoteClient.Obj.Width;
+      Image.Height := TRemoteClient.Obj.Height;
+    end
+  );
 
   // TODO: Bitmap이 화면보다 큰 경우 처리
 end;

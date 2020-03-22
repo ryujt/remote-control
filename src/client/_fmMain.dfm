@@ -14,7 +14,6 @@ object fmMain: TfmMain
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
   PixelsPerInch = 96
