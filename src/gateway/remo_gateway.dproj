@@ -107,7 +107,7 @@
             <Form>fmMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="ServerUnit.pas"/>
+        <DCCReference Include="RemoteGateway.pas"/>
         <DCCReference Include="..\..\lib\Config.pas"/>
         <DCCReference Include="..\..\lib\Global.pas"/>
         <BuildConfiguration Include="Release">

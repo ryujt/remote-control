@@ -70,4 +70,10 @@ object fmMain: TfmMain
     Left = 24
     Top = 64
   end
+  object tmStart: TTimer
+    Interval = 5000
+    OnTimer = tmStartTimer
+    Left = 96
+    Top = 64
+  end
 end

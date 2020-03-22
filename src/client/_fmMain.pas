@@ -4,6 +4,7 @@ interface
 
 uses
   Config,
+  DebugTools, Para,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, _frDeskScreen,
@@ -16,12 +17,14 @@ type
     frDeskScreen: TfrDeskScreen;
     plTop: TPanel;
     tmClose: TTimer;
+    tmStart: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure btConnectClick(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure tmCloseTimer(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure tmStartTimer(Sender: TObject);
   private
     procedure on_connect_error(ASender:TObject);
     procedure on_connected(ASender:TObject);
@@ -46,7 +49,7 @@ uses
 procedure TfmMain.btConnectClick(Sender: TObject);
 begin
   plTop.Visible := false;
-  TRemoteClient.Obj.sp_SetConnectionID(StrToIntDef(edCode.Text, 0));
+  TRemoteClient.Obj.sp_SetConnectionID( StrToIntDef(edCode.Text, 0) );
 end;
 
 procedure TfmMain.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -59,6 +62,9 @@ end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
+  SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE);
+  FormStyle := fsStayOnTop;
+
   TRemoteClient.Obj.OnConnectError := on_connect_error;
   TRemoteClient.Obj.OnConnected := on_connected;
   TRemoteClient.Obj.OnDisconnected := on_disconnected;
@@ -66,7 +72,15 @@ begin
   TRemoteClient.Obj.OnPeerConnectError := on_peer_connect_error;
   TRemoteClient.Obj.OnPeerConnected := on_peer_connected;
   TRemoteClient.Obj.OnPeerDisconnected := on_peer_disconnected;
-  TRemoteClient.Obj.Connect(Gateway_Host, Gateway_Port);
+
+  if GetSwitchValue('host') <> '' then begin
+    Trace( Format('remo_client.exe - host: %s, port: %s', [GetSwitchValue('host'), GetSwitchValue('port')]) );
+
+    plTop.Visible := false;
+    TRemoteClient.Obj.Connect( GetSwitchValue('host'), StrToIntDef(GetSwitchValue('port'), 0) );
+  end else begin
+    TRemoteClient.Obj.Connect(Gateway_Host, Gateway_Port);
+  end;
 end;
 
 procedure TfmMain.FormKeyDown(Sender: TObject; var Key: Word;
@@ -83,8 +97,14 @@ end;
 procedure TfmMain.on_connected(ASender: TObject);
 begin
   Caption := 'Remote control - 서버 접속 완료';
-  plTop.Visible := true;
-  edCode.SetFocus;
+
+  if GetSwitchValue('code') <> '' then begin
+    Trace( Format('remo_client.exe - code: %s', [GetSwitchValue('code')]) );
+    TRemoteClient.Obj.sp_SetConnectionID( StrToIntDef(GetSwitchValue('code'), 0) );
+  end else begin
+    plTop.Visible := true;
+    edCode.SetFocus;
+  end;
 end;
 
 procedure TfmMain.on_connection_id(ASender: TObject; AConnectionID: integer);
@@ -127,6 +147,14 @@ end;
 procedure TfmMain.tmCloseTimer(Sender: TObject);
 begin
   Application.Terminate;
+end;
+
+procedure TfmMain.tmStartTimer(Sender: TObject);
+begin
+  tmStart.Enabled := false;
+
+  SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE);
+  FormStyle := fsNormal;
 end;
 
 end.

@@ -22,7 +22,7 @@ var
 implementation
 
 uses
-  ServerUnit;
+  RemoteGateway;
 
 {$R *.dfm}
 
@@ -31,12 +31,12 @@ begin
   Hide;
   Action := caNone;
   tmClose.Enabled := true;
-  TServerUnit.Obj.Stop;
+  TRemoteGateway.Obj.Stop;
 end;
 
 procedure TfmMain.FormCreate(Sender: TObject);
 begin
-  TServerUnit.Obj.Start;
+  TRemoteGateway.Obj.Start;
 end;
 
 procedure TfmMain.tmCloseTimer(Sender: TObject);

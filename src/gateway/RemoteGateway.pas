@@ -1,4 +1,4 @@
-unit ServerUnit;
+unit RemoteGateway;
 
 interface
 
@@ -8,7 +8,7 @@ uses
   SysUtils, Classes;
 
 type
-  TServerUnit = class
+  TRemoteGateway = class
   private
     FMemoryPool : TMemoryPool;
   private
@@ -26,7 +26,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    class function Obj:TServerUnit;
+    class function Obj:TRemoteGateway;
 
     procedure Start;
     procedure Stop;
@@ -34,18 +34,18 @@ type
 
 implementation
 
-{ TServerUnit }
+{ TRemoteGateway }
 
 var
-  MyObject : TServerUnit = nil;
+  MyObject : TRemoteGateway = nil;
 
-class function TServerUnit.Obj: TServerUnit;
+class function TRemoteGateway.Obj: TRemoteGateway;
 begin
-  if MyObject = nil then MyObject := TServerUnit.Create;
+  if MyObject = nil then MyObject := TRemoteGateway.Create;
   Result := MyObject;
 end;
 
-procedure TServerUnit.on_FSocket_Connected(AConnection: TConnection);
+procedure TRemoteGateway.on_FSocket_Connected(AConnection: TConnection);
 var
   packet : TConnectionIDPacket;
 begin
@@ -64,7 +64,7 @@ begin
   AConnection.IsLogined := true;
 end;
 
-procedure TServerUnit.on_FSocket_Disconnected(AConnection: TConnection);
+procedure TRemoteGateway.on_FSocket_Disconnected(AConnection: TConnection);
 begin
   {$IFDEF DEBUG}
   Trace('TServerUnit.on_FSocket_Disconnected - ' + AConnection.Text);
@@ -73,7 +73,7 @@ begin
   if AConnection.Tag <> -1 then sp_PeerDisconnected(FSocket.ConnectionList.Items[AConnection.Tag]);
 end;
 
-procedure TServerUnit.on_FSocket_Received(AConnection: TConnection;
+procedure TRemoteGateway.on_FSocket_Received(AConnection: TConnection;
   APacket: PPacket);
 var
   packet: PPacket;
@@ -99,7 +99,7 @@ begin
   end;
 end;
 
-procedure TServerUnit.rp_SetConnectionID(AConnection: TConnection;
+procedure TRemoteGateway.rp_SetConnectionID(AConnection: TConnection;
   APacket: PPacket);
 var
   server : TConnection;
@@ -122,7 +122,7 @@ begin
   end;
 end;
 
-procedure TServerUnit.sp_ErPeerConnected(AConnection: TConnection);
+procedure TRemoteGateway.sp_ErPeerConnected(AConnection: TConnection);
 var
   packet : TPacket;
 begin
@@ -131,7 +131,7 @@ begin
   AConnection.Send( GetPacketClone(FMemoryPool, @packet) );
 end;
 
-procedure TServerUnit.sp_PeerConnected(AConnection: TConnection);
+procedure TRemoteGateway.sp_PeerConnected(AConnection: TConnection);
 var
   packet : TPacket;
 begin
@@ -140,7 +140,7 @@ begin
   AConnection.Send( GetPacketClone(FMemoryPool, @packet) );
 end;
 
-procedure TServerUnit.sp_PeerDisconnected(AConnection: TConnection);
+procedure TRemoteGateway.sp_PeerDisconnected(AConnection: TConnection);
 var
   packet : TPacket;
 begin
@@ -149,17 +149,17 @@ begin
   AConnection.Send( GetPacketClone(FMemoryPool, @packet) );
 end;
 
-procedure TServerUnit.Start;
+procedure TRemoteGateway.Start;
 begin
   FSocket.Start;
 end;
 
-procedure TServerUnit.Stop;
+procedure TRemoteGateway.Stop;
 begin
   FSocket.Stop;
 end;
 
-constructor TServerUnit.Create;
+constructor TRemoteGateway.Create;
 begin
   inherited;
 
@@ -177,7 +177,7 @@ begin
   FSocket.OnReceived := on_FSocket_Received;
 end;
 
-destructor TServerUnit.Destroy;
+destructor TRemoteGateway.Destroy;
 begin
   FreeAndNil(FMemoryPool);
   FreeAndNil(FSocket);
@@ -186,5 +186,5 @@ begin
 end;
 
 initialization
-  MyObject := TServerUnit.Create;
+  MyObject := TRemoteGateway.Create;
 end.

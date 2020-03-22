@@ -3,7 +3,7 @@ program remo_gateway;
 uses
   Vcl.Forms,
   _fmMain in '_fmMain.pas' {fmMain},
-  ServerUnit in 'ServerUnit.pas',
+  RemoteGateway in 'RemoteGateway.pas',
   Config in '..\..\lib\Config.pas',
   Global in '..\..\lib\Global.pas';
 
