@@ -107,10 +107,6 @@
             <Form>fmMain</Form>
         </DCCReference>
         <DCCReference Include="..\..\lib\Config.pas"/>
-        <DCCReference Include="..\..\lib\Global.pas"/>
-        <DCCReference Include="..\..\lib\Core\DeskZipUnit.pas"/>
-        <DCCReference Include="..\..\lib\Core\Protocols.pas"/>
-        <DCCReference Include="..\..\lib\RemoteServer.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

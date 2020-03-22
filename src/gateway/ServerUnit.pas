@@ -3,7 +3,7 @@ unit ServerUnit;
 interface
 
 uses
-  Config, Global, Protocols,
+  Config, Global, RemoteControlUtils,
   DebugTools, SuperSocketUtils, SuperSocketServer, MemoryPool,
   SysUtils, Classes;
 
@@ -67,7 +67,7 @@ end;
 procedure TServerUnit.on_FSocket_Disconnected(AConnection: TConnection);
 begin
   {$IFDEF DEBUG}
-  Trace('TVideoServer.on_FSocket_Disconnected - ' + AConnection.Text);
+  Trace('TServerUnit.on_FSocket_Disconnected - ' + AConnection.Text);
   {$ENDIF}
 
   if AConnection.Tag <> -1 then sp_PeerDisconnected(FSocket.ConnectionList.Items[AConnection.Tag]);
@@ -80,7 +80,8 @@ var
   PacketType : TPacketType;
 begin
   {$IFDEF DEBUG}
-  Trace( Format('TServerUnit.on_FSocket_Received - %d', [APacket^.PacketType]) );
+  if APacket^.PacketType >= 100 then
+    Trace( Format('TServerUnit.on_FSocket_Received - %d', [APacket^.PacketType]) );
   {$ENDIF}
 
   Packet := GetPacketClone(FMemoryPool, APacket);
@@ -105,7 +106,7 @@ var
   packet : PConnectionIDPacket absolute APacket;
 begin
   {$IFDEF DEBUG}
-  Trace('TVideoServer.rp_SetConnectionID - ' + Format('%d <--> %d', [packet^.ID, AConnection.ID]));
+  Trace('TServerUnit.rp_SetConnectionID - ' + Format('%d <--> %d', [packet^.ID, AConnection.ID]));
   {$ENDIF}
 
   server := FSocket.ConnectionList.Items[packet^.ID];

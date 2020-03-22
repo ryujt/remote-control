@@ -5,8 +5,7 @@ uses
   _fmMain in '_fmMain.pas' {fmMain},
   ServerUnit in 'ServerUnit.pas',
   Config in '..\..\lib\Config.pas',
-  Global in '..\..\lib\Global.pas',
-  Protocols in '..\..\lib\Core\Protocols.pas';
+  Global in '..\..\lib\Global.pas';
 
 {$R *.res}
 

@@ -3,7 +3,7 @@ unit Global;
 interface
 
 uses
-  Protocols,
+  RemoteControlUtils,
   SuperSocketUtils, MemoryPool,
   SysUtils, Classes;
 

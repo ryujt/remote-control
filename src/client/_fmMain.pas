@@ -4,7 +4,6 @@ interface
 
 uses
   Config,
-  AsyncTasks,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, _frDeskScreen,
@@ -83,13 +82,9 @@ end;
 
 procedure TfmMain.on_connected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      Caption := 'Remote control - 서버 접속 완료';
-      plTop.Visible := true;
-      edCode.SetFocus;
-    end
-  );
+  Caption := 'Remote control - 서버 접속 완료';
+  plTop.Visible := true;
+  edCode.SetFocus;
 end;
 
 procedure TfmMain.on_connection_id(ASender: TObject; AConnectionID: integer);
@@ -99,54 +94,34 @@ end;
 
 procedure TfmMain.on_connect_error(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      MessageDlg('서버에 접속할 수가 없습니다.', mtError, [mbOK], 0);
-      Close;
-    end
-  );
+  MessageDlg('서버에 접속할 수가 없습니다.', mtError, [mbOK], 0);
+  Close;
 end;
 
 procedure TfmMain.on_disconnected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      MessageDlg('서버와 접속이 끊어져서 프로그램을 종료합니다.', mtWarning, [mbOK], 0);
-      Close;
-    end
-  );
+  MessageDlg('서버와 접속이 끊어져서 프로그램을 종료합니다.', mtWarning, [mbOK], 0);
+  Close;
 end;
 
 procedure TfmMain.on_peer_connected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      Caption := 'Remote control - 원격 제어 중';
-    end
-  );
+  Caption := 'Remote control - 원격 제어 중';
 end;
 
 procedure TfmMain.on_peer_connect_error(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      MessageDlg('잘못된 아이디로 접속을 시도하였습니다.' + #13#10 + '아이디를 확인하여주시기 바랍니다.', mtWarning, [mbOK], 0);
-      plTop.Visible := true;
-      edCode.SetFocus;
-    end
-  );
+  MessageDlg('잘못된 아이디로 접속을 시도하였습니다.' + #13#10 + '아이디를 확인하여주시기 바랍니다.', mtWarning, [mbOK], 0);
+  plTop.Visible := true;
+  edCode.SetFocus;
 end;
 
 procedure TfmMain.on_peer_disconnected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      MessageDlg('상대방과의 연결이 끊어졌습니다.', mtWarning, [mbOK], 0);
-      Caption := 'Remote control - 원격 대기 중';
-      plTop.Visible := true;
-      edCode.SetFocus;
-    end
-  );
+  MessageDlg('상대방과의 연결이 끊어졌습니다.', mtWarning, [mbOK], 0);
+  Caption := 'Remote control - 원격 대기 중';
+  plTop.Visible := true;
+  edCode.SetFocus;
 end;
 
 procedure TfmMain.tmCloseTimer(Sender: TObject);

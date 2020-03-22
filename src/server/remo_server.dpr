@@ -7,11 +7,7 @@ uses
   DrawFullWindow,
   Vcl.Forms,
   _fmMain in '_fmMain.pas' {fmMain},
-  Config in '..\..\lib\Config.pas',
-  Global in '..\..\lib\Global.pas',
-  DeskZipUnit in '..\..\lib\Core\DeskZipUnit.pas',
-  Protocols in '..\..\lib\Core\Protocols.pas',
-  RemoteServer in '..\..\lib\RemoteServer.pas';
+  Config in '..\..\lib\Config.pas';
 
 {$R *.res}
 

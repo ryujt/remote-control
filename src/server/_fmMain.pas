@@ -4,7 +4,6 @@ interface
 
 uses
   Config, RemoteServer,
-  AsyncTasks,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls;
 
@@ -59,67 +58,39 @@ end;
 
 procedure TfmMain.on_connected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      Caption := '원격 대기 중';
-    end
-  );
+  Caption := '원격 대기 중';
 end;
 
 procedure TfmMain.on_connection_id(ASender: TObject; AConnectionID: integer);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      edCode.Text := IntToStr(AConnectionID);
-    end
-  );
+  edCode.Text := IntToStr(AConnectionID);
 end;
 
 procedure TfmMain.on_connect_error(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      MessageDlg('서버에 접속할 수가 없습니다.', mtError, [mbOK], 0);
-      Close;
-    end
-  );
+  MessageDlg('서버에 접속할 수가 없습니다.', mtError, [mbOK], 0);
+  Close;
 end;
 
 procedure TfmMain.on_disconnected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      MessageDlg('서버와 접속이 끊어져서 프로그램을 종료합니다.', mtWarning, [mbOK], 0);
-      Close;
-    end
-  );
+  MessageDlg('서버와 접속이 끊어져서 프로그램을 종료합니다.', mtWarning, [mbOK], 0);
+  Close;
 end;
 
 procedure TfmMain.on_peer_connected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      Caption := '원격 제어 중';
-    end
-  );
+  Caption := '원격 제어 중';
 end;
 
 procedure TfmMain.on_peer_connect_error(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      Caption := '원격 접속 중에 에러가 발생';
-    end
-  );
+  Caption := '원격 접속 중에 에러가 발생';
 end;
 
 procedure TfmMain.on_peer_disconnected(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      Caption := '원격 대기 중';
-    end
-  );
+  Caption := '원격 대기 중';
 end;
 
 procedure TfmMain.tmCloseTimer(Sender: TObject);

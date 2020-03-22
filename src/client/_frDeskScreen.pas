@@ -3,7 +3,6 @@ unit _frDeskScreen;
 interface
 
 uses
-  AsyncTasks,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.jpeg,
@@ -76,13 +75,9 @@ end;
 
 procedure TfrDeskScreen.on_DeskScreenIsReady(ASender: TObject);
 begin
-  AsyncTask(
-    procedure (AUserData:pointer) begin
-      TRemoteClient.Obj.GetBitmap(Image.Picture.Bitmap);
-      Image.Width := TRemoteClient.Obj.Width;
-      Image.Height := TRemoteClient.Obj.Height;
-    end
-  );
+  TRemoteClient.Obj.GetBitmap(Image.Picture.Bitmap);
+  Image.Width := TRemoteClient.Obj.Width;
+  Image.Height := TRemoteClient.Obj.Height;
 
   // TODO: Bitmap이 화면보다 큰 경우 처리
 end;

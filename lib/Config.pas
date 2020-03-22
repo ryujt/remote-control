@@ -6,7 +6,7 @@ uses
   Disk;
 
 const
-  MEMORY_POOL_SIZE_32 = 1024 * 1024 * 512;
+  MEMORY_POOL_SIZE_32 = 1024 * 1024 * 128;
   MEMORY_POOL_SIZE_64 = 1024 * 1024 * 1024;
 
 var

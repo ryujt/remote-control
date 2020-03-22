@@ -4,11 +4,7 @@ uses
   Vcl.Forms,
   _fmMain in '_fmMain.pas' {fmMain},
   Config in '..\..\lib\Config.pas',
-  Global in '..\..\lib\Global.pas',
-  DeskUnZipUnit in '..\..\lib\Core\DeskUnZipUnit.pas',
-  _frDeskScreen in '_frDeskScreen.pas' {frDeskScreen: TFrame},
-  Protocols in '..\..\lib\Core\Protocols.pas',
-  RemoteClient in '..\..\lib\RemoteClient.pas';
+  _frDeskScreen in '_frDeskScreen.pas' {frDeskScreen: TFrame};
 
 {$R *.res}
 
