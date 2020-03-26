@@ -110,12 +110,10 @@
         </DelphiCompile>
         <DCCReference Include="_fmMain.pas">
             <Form>fmMain</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\..\lib\Config.pas"/>
         <DCCReference Include="_frDeskScreen.pas">
             <Form>frDeskScreen</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <BuildConfiguration Include="Release">

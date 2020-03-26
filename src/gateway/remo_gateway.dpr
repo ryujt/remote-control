@@ -1,6 +1,8 @@
 program remo_gateway;
 
 uses
+  ThreadUtils,
+  Windows,
   Vcl.Forms,
   _fmMain in '_fmMain.pas' {fmMain},
   RemoteGateway in 'RemoteGateway.pas',
@@ -10,6 +12,9 @@ uses
 {$R *.res}
 
 begin
+  SetPriorityClass(GetCurrentProcess, REALTIME_PRIORITY_CLASS);
+  SetThreadPriorityFast;
+
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfmMain, fmMain);
